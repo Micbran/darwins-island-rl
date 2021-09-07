@@ -35,6 +35,41 @@ public class TurnManager : Manager<TurnManager>
         {
             this.actingEntities.Enqueue(a);
         }
-        Debug.Log(this.actingEntities);
+    }
+
+    private void Update()
+    {
+        if (this.actingEntities.Count == 0)
+        {
+            this.StartNewGlobalTurn();
+        }
+
+        if (this.IsPlayersTurn)
+        {
+            return;
+        }
+
+        
+
+
+    }
+
+    private void StartNewGlobalTurn()
+    {
+
+    }
+
+    public void EndPlayerTurn()
+    {
+        this.IsPlayersTurn = false;
+        Actor playerRef = FindObjectOfType<Player>() as Actor;
+        if (playerRef.Energy <= 0)
+        {
+            this.actedEntities.Add(playerRef);
+        }
+        else
+        {
+            this.actingEntities.Enqueue(playerRef);
+        }
     }
 }

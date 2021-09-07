@@ -28,8 +28,7 @@ public class Player : Actor
 
         if (horizontal != 0 || vertical != 0)
         {
-            AttemptMove<Enemy>(horizontal, vertical);
-            TurnManager.Instance.IsPlayersTurn = false;
+            AttemptMove(horizontal, vertical);
         }
     }
 
@@ -38,19 +37,25 @@ public class Player : Actor
         return;
     }
 
-    protected override void AttemptMove<T>(int xDir, int yDir)
+    protected override bool AttemptMove(int xDir, int yDir)
     {
-        base.AttemptMove<T>(xDir, yDir);
+        bool validMove = base.AttemptMove(xDir, yDir);
 
-        RaycastHit2D hit;
+        if (validMove)
+        {
+            EndTurn();
+        }
 
-        EndTurn();
+        return validMove;
     }
 
-    protected override void OnCantMove<T>(T component)
+    protected override void OnCantMove(Actor component)
     {
-        Enemy hitEnemy = component as Enemy;
-        this.DamageEnemy(hitEnemy);
+        Enemy hitEnemy = component.GetComponent<Enemy>();
+        if (hitEnemy)
+        {
+            this.DamageEnemy(hitEnemy);
+        }
     }
 
     private void CheckIfGameOver()
@@ -64,5 +69,12 @@ public class Player : Actor
     private void DamageEnemy(Enemy enemy)
     {
         return;
+    }
+
+    public override void EndTurn()
+    {
+        base.EndTurn();
+        TurnManager.Instance.EndPlayerTurn();
+        Debug.Log("Player ended turn.");
     }
 }

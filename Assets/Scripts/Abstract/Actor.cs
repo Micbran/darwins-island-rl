@@ -6,6 +6,12 @@ public abstract class Actor : Entity
 {
     [SerializeField] private float moveTime = 0.1f;
     [SerializeField] private LayerMask blockingLayer;
+    [SerializeField] private bool isPlayer = false;
+    public bool IsPlayer
+    {
+        get;
+        private set;
+    }
 
     private BoxCollider mainCollider;
     private Rigidbody rb;
@@ -29,10 +35,12 @@ public abstract class Actor : Entity
     protected bool Move(int xDir, int yDir, out RaycastHit hit)
     {
         Vector3 start = this.transform.position;
+        Vector3 length = new Vector3(xDir, 0, yDir);
         Vector3 end = start + new Vector3(xDir, 0, yDir);
+        Vector3 direction = end - start;
 
         this.mainCollider.enabled = false;
-        Physics.Raycast(start, end, out hit, end.magnitude, this.blockingLayer);
+        Physics.Raycast(start, direction, out hit, length.magnitude, this.blockingLayer);
         this.mainCollider.enabled = true;
 
         if (hit.transform == null)
@@ -57,25 +65,32 @@ public abstract class Actor : Entity
         }
     }
 
-    protected virtual void AttemptMove<T>(int xDir, int yDir) where T : Component
+    protected virtual bool AttemptMove(int xDir, int yDir)
     {
         RaycastHit hit;
         bool canMove = Move(xDir, yDir, out hit);
 
+        // empty space
         if (hit.transform == null)
         {
-            return;
+            return true;
         }
 
-        T hitComponent = hit.transform.GetComponent<T>();
+        Actor hitComponent = hit.transform.GetComponent<Actor>();
 
+        // Actor in the way
         if (!canMove && hitComponent != null)
         {
             OnCantMove(hitComponent);
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
-    protected abstract void OnCantMove<T>(T component) where T : Component;
+    protected abstract void OnCantMove(Actor component);
 
     public virtual void EndTurn()
     {
