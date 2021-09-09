@@ -19,6 +19,8 @@ public abstract class Actor : Entity
 
     private int currentEnergy;
 
+    private bool isMoving = false;
+
     public int Energy
     {
         get { return this.currentEnergy; }
@@ -34,6 +36,8 @@ public abstract class Actor : Entity
 
     protected bool Move(int xDir, int yDir, out RaycastHit hit)
     {
+
+        Debug.Log("Move fired.");
         Vector3 start = this.transform.position;
         Vector3 length = new Vector3(xDir, 0, yDir);
         Vector3 end = start + new Vector3(xDir, 0, yDir);
@@ -43,8 +47,14 @@ public abstract class Actor : Entity
         Physics.Raycast(start, direction, out hit, length.magnitude, this.blockingLayer);
         this.mainCollider.enabled = true;
 
+        if (this.isMoving)
+        {
+            return false;
+        }
+
         if (hit.transform == null)
         {
+            this.isMoving = true;
             StartCoroutine(this.SmoothMovement(end));
             return true;
         }
@@ -63,6 +73,7 @@ public abstract class Actor : Entity
             sqrRemainingDistance = (this.transform.position - end).sqrMagnitude;
             yield return null;
         }
+        this.isMoving = false;
     }
 
     protected virtual bool AttemptMove(int xDir, int yDir)
@@ -97,9 +108,19 @@ public abstract class Actor : Entity
         DeductEnergy();
     }
 
+    public virtual void NewGlobalTurn()
+    {
+        AddEnergy();
+    }
+
      private void DeductEnergy()
     {
         currentEnergy -= 1000;
+    }
+
+    private void AddEnergy()
+    {
+        currentEnergy += 1000;
     }
 
     public override string ToString()
