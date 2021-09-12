@@ -19,7 +19,7 @@ public abstract class Actor : Entity
 
     private int currentEnergy;
 
-    private bool isMoving = false;
+    protected bool isMoving = false;
 
     public int Energy
     {
@@ -36,8 +36,6 @@ public abstract class Actor : Entity
 
     protected bool Move(int xDir, int yDir, out RaycastHit hit)
     {
-
-        Debug.Log("Move fired.");
         Vector3 start = this.transform.position;
         Vector3 length = new Vector3(xDir, 0, yDir);
         Vector3 end = start + new Vector3(xDir, 0, yDir);
@@ -102,6 +100,8 @@ public abstract class Actor : Entity
     }
 
     protected abstract void OnCantMove(Actor component);
+
+    public abstract void KillActor();
 
     public virtual void EndTurn()
     {

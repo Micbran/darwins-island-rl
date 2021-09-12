@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : Manager<GameManager>
 {
@@ -9,6 +10,7 @@ public class GameManager : Manager<GameManager>
     public void GameOver()
     {
         enabled = false;
+        SceneManager.LoadScene("Game Over");
     }
 
     private void Update()

@@ -50,14 +50,16 @@ public class TurnManager : Manager<TurnManager>
         }
 
         Actor acting = this.actingEntities.Dequeue();
+        if (acting == null)
+        {
+            return;
+        }
         if (acting is Player)
         {
-            Debug.Log("Actor is player.");
             this.IsPlayersTurn = true;
         }
         else // filler code for now
         {
-            Debug.Log("Actor is not player.");
             acting.EndTurn();
             if (acting.Energy <= 0)
             {
