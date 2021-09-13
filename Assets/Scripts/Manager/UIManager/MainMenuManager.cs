@@ -7,6 +7,10 @@ public class MainMenuManager : MonoBehaviour
 {
     public void StartGame()
     {
+        if (GameManager.Instance)
+        {
+            GameManager.Instance.NewGame();
+        }
         SceneManager.LoadScene("Test Scene");
     }
 

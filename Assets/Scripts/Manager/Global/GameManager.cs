@@ -13,6 +13,25 @@ public class GameManager : Manager<GameManager>
         SceneManager.LoadScene("Game Over");
     }
 
+    public void NewGame()
+    {
+        enabled = true;
+        this.currentFloor = 1;
+    }
+
+    public void TransitionLevel()
+    {
+        if (this.currentFloor == 1)
+        {
+            SceneManager.LoadScene("Between Level");
+        }
+        else if (this.currentFloor == 2)
+        {
+            SceneManager.LoadScene("Test Scene 3");
+        }
+        currentFloor++;
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Backspace))
