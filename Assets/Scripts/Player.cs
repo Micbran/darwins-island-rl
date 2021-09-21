@@ -5,9 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(Statistics))]
 public class Player : Actor
 {
-    [SerializeField] private int maxHealth = 10;
-    private int currentHealth;
-
     [SerializeField] private float inputDelay = 0.2f;
     private float inputDelayTimer = 0f;
 
@@ -21,7 +18,6 @@ public class Player : Actor
     protected override void Awake()
     {
         this.stats = this.GetComponent<Statistics>();
-        this.currentHealth = this.maxHealth;
         base.Awake();
     }
 
@@ -84,14 +80,6 @@ public class Player : Actor
         }
     }
 
-    private void CheckIfGameOver()
-    {
-        if (currentHealth <= 0)
-        {
-            GameManager.Instance.GameOver();
-        }
-    }
-
     private void AttackEnemy(Enemy enemy)
     {
         this.stats.MakeAttacks(enemy);
@@ -109,6 +97,11 @@ public class Player : Actor
             this.swapMaterial = tempMaterial;
         }
         delaying = true;
+    }
+
+    protected override void AddEnergy()
+    {
+        this.currentEnergy += GlobalRandom.SpeedRandomization(this.stats.Speed);
     }
 
     public override void KillActor()

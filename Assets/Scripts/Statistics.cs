@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,10 @@ using UnityEngine;
 [RequireComponent(typeof(Actor))]
 public class Statistics : MonoBehaviour
 {
+    public event Action<int> OnTakeDamage = delegate { };
+    public event Action OnStatsChanged = delegate { };
+
+
     private int currentHealth;
     public int CurrentHealth
     {
@@ -24,8 +29,25 @@ public class Statistics : MonoBehaviour
     }
 
     private int attack;
+    public int Attack
+    {
+        get { return this.attack; }
+    }
     private int defense;
+    public int Defense
+    {
+        get { return this.defense; }
+    }
     private int damage;
+    public int Damage
+    {
+        get { return this.damage; }
+    }
+    private int speed;
+    public int Speed
+    {
+        get { return this.speed; }
+    }
 
     private List<Attack> attacks = new List<Attack>();
 
@@ -46,6 +68,7 @@ public class Statistics : MonoBehaviour
         this.attack = starter.attack;
         this.defense = starter.defense;
         this.damage = starter.damage;
+        this.speed = starter.speed;
 
         this.attacks.AddRange(starter.attacks);
     }
@@ -54,6 +77,7 @@ public class Statistics : MonoBehaviour
     {
         Debug.Log($"Took damage: {damageTaken}, {this.currentHealth} -> {this.currentHealth - damageTaken}");
         this.currentHealth -= damageTaken;
+        this.OnTakeDamage?.Invoke(this.currentHealth);
         CheckIfAlive();
     }
 

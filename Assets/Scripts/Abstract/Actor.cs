@@ -17,7 +17,7 @@ public abstract class Actor : Entity
     private Rigidbody rb;
     private float inverseMoveTime;
 
-    private int currentEnergy;
+    protected int currentEnergy;
 
     protected bool isMoving = false;
 
@@ -113,12 +113,12 @@ public abstract class Actor : Entity
         AddEnergy();
     }
 
-     private void DeductEnergy()
+     protected virtual void DeductEnergy()
     {
         currentEnergy -= 1000;
     }
 
-    private void AddEnergy()
+    protected virtual void AddEnergy()
     {
         currentEnergy += 1000;
     }
