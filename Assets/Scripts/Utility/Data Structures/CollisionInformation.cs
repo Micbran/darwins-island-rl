@@ -50,4 +50,15 @@ public class CollisionInformation : IEnumerator, IEnumerable
     {
         return GetEnumerator();
     }
+
+    public override string ToString()
+    {
+        string finalString = "";
+        foreach (Collider collide in this.colliders)
+        {
+            finalString += collide.gameObject.name + ", ";
+        }
+
+        return finalString + $"[{this.Center} ({this.baseLocation} + {this.offset})]";
+    }
 }

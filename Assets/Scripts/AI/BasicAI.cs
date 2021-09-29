@@ -21,6 +21,10 @@ public class BasicAI : MonoBehaviour, IArtificialIntelligence
     private void Awake()
     {
         this.parentEnemy = this.GetComponent<Enemy>();
+    }
+
+    private void Start()
+    {
         this.playerReference = FindObjectOfType<Player>();
     }
 
@@ -64,13 +68,18 @@ public class BasicAI : MonoBehaviour, IArtificialIntelligence
             );
         foreach (CollisionInformation collisionInfo in directions)
         {
+            bool skipToNext = false;
             foreach (Collision collision in collisionInfo)
             {
-                Enemy checkEnemy = collision.gameObject.GetComponent<Enemy>();
+                Actor checkEnemy = collision.gameObject.GetComponent<Actor>();
                 if (checkEnemy != null) // square is occupied
                 {
-                    continue;
+                    skipToNext = true;
                 }
+            }
+            if (skipToNext)
+            {
+                continue;
             }
             bool didMove = this.parentEnemy.AttemptMove((int)collisionInfo.offset.x, (int)collisionInfo.offset.z);
             if (didMove)

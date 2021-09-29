@@ -11,6 +11,7 @@ public abstract class Actor : Entity
     [SerializeField] private bool isPlayer = false;
     [SerializeField] public string actorName;
 
+    private readonly float floatConstant = 0.1f;
 
     public bool IsPlayer
     {
@@ -42,10 +43,10 @@ public abstract class Actor : Entity
     protected bool Move(int xDir, int yDir, out RaycastHit hit)
     {
         Vector3 start = this.transform.position;
-        Vector3 length = new Vector3(xDir, 0, yDir);
-        Vector3 end = start + length;
+        Vector3 direction = new Vector3(xDir, 0, yDir);
+        Vector3 end = start + direction;
         this.mainCollider.enabled = false;
-        Physics.Raycast(start, length, out hit, length.magnitude, this.collisionLayer | this.actorLayer);
+        Physics.Raycast(start, direction, out hit, direction.magnitude + this.floatConstant, this.collisionLayer | this.actorLayer);
         this.mainCollider.enabled = true;
 
         if (this.isMoving)
@@ -74,6 +75,7 @@ public abstract class Actor : Entity
             sqrRemainingDistance = (this.transform.position - end).sqrMagnitude;
             yield return null;
         }
+        this.transform.position = end;
         this.isMoving = false;
     }
 
