@@ -59,7 +59,7 @@ public class Player : Actor
         return;
     }
 
-    protected override bool AttemptMove(int xDir, int yDir)
+    public override bool AttemptMove(int xDir, int yDir)
     {
         bool validMove = base.AttemptMove(xDir, yDir);
 
@@ -71,7 +71,7 @@ public class Player : Actor
         return validMove;
     }
 
-    protected override void OnCantMove(Actor component)
+    public override void OnCantMove(Actor component)
     {
         Enemy hitEnemy = component.GetComponent<Enemy>();
         if (hitEnemy)
@@ -101,7 +101,7 @@ public class Player : Actor
 
     protected override void AddEnergy()
     {
-        this.currentEnergy += GlobalRandom.SpeedRandomization(this.stats.Speed);
+        this.currentEnergy += 1000 + GlobalRandom.SpeedRandomization(this.stats.Speed);
     }
 
     public override void KillActor()

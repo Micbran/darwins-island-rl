@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IOnDestroy
+public interface IArtificialIntelligence
 {
-    public abstract void DestroyAction(Actor actor);
+    public void Act();
 }

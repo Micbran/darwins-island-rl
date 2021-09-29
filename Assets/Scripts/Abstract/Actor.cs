@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public abstract class Actor : Entity
 {
     [SerializeField] private float moveTime = 0.1f;
-    [SerializeField] private LayerMask blockingLayer;
+    [SerializeField] private LayerMask collisionLayer;
+    [SerializeField] private LayerMask actorLayer;
     [SerializeField] private bool isPlayer = false;
+    [SerializeField] public string actorName;
+
+
     public bool IsPlayer
     {
         get;
@@ -38,11 +43,9 @@ public abstract class Actor : Entity
     {
         Vector3 start = this.transform.position;
         Vector3 length = new Vector3(xDir, 0, yDir);
-        Vector3 end = start + new Vector3(xDir, 0, yDir);
-        Vector3 direction = end - start;
-
+        Vector3 end = start + length;
         this.mainCollider.enabled = false;
-        Physics.Raycast(start, direction, out hit, length.magnitude, this.blockingLayer);
+        Physics.Raycast(start, length, out hit, length.magnitude, this.collisionLayer | this.actorLayer);
         this.mainCollider.enabled = true;
 
         if (this.isMoving)
@@ -74,7 +77,7 @@ public abstract class Actor : Entity
         this.isMoving = false;
     }
 
-    protected virtual bool AttemptMove(int xDir, int yDir)
+    public virtual bool AttemptMove(int xDir, int yDir)
     {
         RaycastHit hit;
         bool canMove = Move(xDir, yDir, out hit);
@@ -99,7 +102,7 @@ public abstract class Actor : Entity
         }
     }
 
-    protected abstract void OnCantMove(Actor component);
+    public abstract void OnCantMove(Actor component);
 
     public abstract void KillActor();
 
@@ -125,6 +128,6 @@ public abstract class Actor : Entity
 
     public override string ToString()
     {
-        return base.ToString();
+        return this.actorName;
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class TurnManager : Manager<TurnManager>
 {
-    private bool playersTurn = true;
+    [SerializeField] private bool playersTurn = false;
     public bool IsPlayersTurn
     {
         get { return this.playersTurn; }
@@ -14,6 +14,9 @@ public class TurnManager : Manager<TurnManager>
     }
     private List<Actor> actedEntities = new List<Actor>();
     private EnergyQueue actingEntities = new EnergyQueue();
+
+    private float moveTimerMax = 0.3f;
+    private float moveTimer = 0;
 
     private void OnEnable()
     {
@@ -39,7 +42,11 @@ public class TurnManager : Manager<TurnManager>
 
     private void Update()
     {
-        if (this.actingEntities.Count == 0)
+        moveTimer -= Time.deltaTime;
+        if (moveTimer > 0) return;
+
+        moveTimer = moveTimerMax;
+        if (this.actingEntities.Count == 0 && !this.IsPlayersTurn)
         {
             this.StartNewGlobalTurn();
         }
@@ -58,9 +65,19 @@ public class TurnManager : Manager<TurnManager>
         {
             this.IsPlayersTurn = true;
         }
-        else // filler code for now
+        else
         {
-            acting.EndTurn();
+            IArtificialIntelligence ai = acting.GetComponent<IArtificialIntelligence>();
+            if (ai != null)
+            {
+                ai.Act();
+            }
+            else
+            {
+                Debug.Log(acting.actorName + " does not have an AI component.");
+                acting.EndTurn();
+            }
+
             if (acting.Energy <= 0)
             {
                 this.actedEntities.Add(acting);
@@ -95,6 +112,7 @@ public class TurnManager : Manager<TurnManager>
     public void EndPlayerTurn()
     {
         this.IsPlayersTurn = false;
+        moveTimer = moveTimerMax;
         Actor playerRef = FindObjectOfType<Player>();
         if (playerRef.Energy <= 0)
         {

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DestroyDestroy : IOnDestroy
+public class DestroyDestroy : MonoBehaviour, IOnDestroy
 {
-    public override void DestroyAction(Actor actor)
+    public void DestroyAction(Actor actor)
     {
         Destroy(actor.gameObject);
     }

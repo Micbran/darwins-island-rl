@@ -75,7 +75,6 @@ public class Statistics : MonoBehaviour
 
     public void TakeDamage(int damageTaken)
     {
-        Debug.Log($"Took damage: {damageTaken}, {this.currentHealth} -> {this.currentHealth - damageTaken}");
         this.currentHealth -= damageTaken;
         this.OnTakeDamage?.Invoke(this.currentHealth);
         CheckIfAlive();
@@ -85,7 +84,6 @@ public class Statistics : MonoBehaviour
     {
         if (attackRoll >= this.defense)
         {
-            Debug.Log($"Got hit: {attackRoll} vs. {this.defense} for {damageRoll}!");
             this.TakeDamage(damageRoll);
         }
     }
@@ -102,7 +100,17 @@ public class Statistics : MonoBehaviour
         {
             int attackResult = GlobalRandom.AttackRoll();
             int damageResult = attack.RollAttack();
-            Debug.Log("Attack made: " + attack.ToString() + $" -> {attackResult + this.attack} ({attackResult} + {this.attack}) result for {damageResult} damage.");
+            AttackResult result = new AttackResult()
+            {
+                resultAttack = attack,
+                attackRollTotal = attackResult + this.attack,
+                defense = targetStats.Defense,
+                damageRoll = damageResult,
+                damageBonus = this.damage,
+                resultSource = this.parent.actorName,
+                resultTarget = targetActor.actorName
+            };
+            LogManager.Instance.AddNewResult(result);
             targetStats.TakeAttack(attackResult + this.attack, damageResult + this.damage);
         }
         

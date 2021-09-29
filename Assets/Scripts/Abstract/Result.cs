@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IOnDestroy
+public abstract class Result
 {
-    public abstract void DestroyAction(Actor actor);
+    public abstract string ToResultString();
 }

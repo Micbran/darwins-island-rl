@@ -2,11 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Statistics))]
 public class Enemy : Actor
 {
-    protected override void OnCantMove(Actor component)
+    private Statistics stats;
+
+    protected override void Awake()
     {
-        throw new System.NotImplementedException();
+        this.stats = this.GetComponent<Statistics>();
+        base.Awake();
+    }
+
+    public override void OnCantMove(Actor component)
+    {
+        Player player = component.GetComponent<Player>();
+        if (player)
+        {
+            this.AttackActor(player);
+        }
+    }
+
+    private void AttackActor(Actor actor)
+    {
+        this.stats.MakeAttacks(actor);
     }
 
     public override void KillActor()
