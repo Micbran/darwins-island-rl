@@ -15,7 +15,7 @@ public class TurnManager : Manager<TurnManager>
     private List<Actor> actedEntities = new List<Actor>();
     private EnergyQueue actingEntities = new EnergyQueue();
 
-    private float moveTimerMax = 0.1f;
+    private float moveTimerMax = 0.02f;
     private float moveTimer = 0;
 
     private void OnEnable()

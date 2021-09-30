@@ -49,6 +49,10 @@ public class Player : Actor
 
             if (horizontal != 0 || vertical != 0)
             {
+                if (Mathf.Abs(horizontal) == 1 && Mathf.Abs(vertical) == 1)
+                {
+                    horizontal = 0;
+                }
                 AttemptMove(horizontal, vertical);
             }
         }

@@ -27,7 +27,7 @@ public class GameManager : Manager<GameManager>
         }
         else if (this.currentFloor == 2)
         {
-            SceneManager.LoadScene("Test Scene 3");
+            SceneManager.LoadScene("Level1");
         }
         currentFloor++;
     }

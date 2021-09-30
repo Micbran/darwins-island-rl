@@ -43,6 +43,26 @@ public class Dice : ScriptableObject
         this.number = number;
     }
 
+    public Dice(string diceExpression)
+    {
+        diceExpression = diceExpression.ToLower();
+        string[] split = diceExpression.Split('d');
+        if (split.Length == 2)
+        {
+            this.number = int.Parse(split[0]);
+            this.sides = int.Parse(split[1]);
+        }
+        else if (split.Length == 1)
+        {
+            this.number = int.Parse(split[0]);
+            this.sides = 1;
+        }
+        else
+        {
+            Debug.LogError("Error parsing dice expression: " + diceExpression);
+        }
+    }
+
     public int RollDice()
     {
         int sum = 0;

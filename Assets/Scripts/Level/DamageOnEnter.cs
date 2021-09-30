@@ -13,8 +13,8 @@ public class DamageOnEnter : MonoBehaviour
             ignoreNext = false;
             return;
         }
-        Player player = other.GetComponent<Player>();
-        if (!player)
+        Actor actor = other.GetComponent<Actor>();
+        if (!actor)
         {
             return;
         }
@@ -22,6 +22,7 @@ public class DamageOnEnter : MonoBehaviour
         if (stats)
         {
             stats.TakeDamage(this.damageAmount);
+            LogManager.Instance.AddNewResult(new BasicResult() { message = $"{actor.actorName} takes {this.damageAmount} damage from lava!" });
             ignoreNext = true;
         }
     }

@@ -49,6 +49,11 @@ public class Statistics : MonoBehaviour
         get { return this.speed; }
     }
 
+    public bool IsFullHealth
+    {
+        get { return this.CurrentHealth == this.MaxHealth; }
+    }
+
     private List<Attack> attacks = new List<Attack>();
 
     [SerializeField] private CreatureStats starter;
@@ -71,6 +76,16 @@ public class Statistics : MonoBehaviour
         this.speed = starter.speed;
 
         this.attacks.AddRange(starter.attacks);
+    }
+
+    public void Heal(int amount, string source)
+    {
+        int saveHealth = currentHealth;
+        this.currentHealth = Mathf.Clamp(currentHealth + amount, 0, this.MaxHealth);
+        int actualAmount = currentHealth - saveHealth;
+
+        LogManager.Instance.AddNewResult(new BasicResult { message = $"{this.parent.actorName} was healed for {actualAmount} by {source}." });
+        this.OnTakeDamage?.Invoke(this.CurrentHealth);
     }
 
     public void TakeDamage(int damageTaken)
