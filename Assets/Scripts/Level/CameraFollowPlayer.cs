@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class CameraFollowPlayer : MonoBehaviour
 {
+    [SerializeField] Vector3 followBase;
     private Transform objectToFollow;
     private Vector3 objectOffset;
 
-    private void Awake()
+    public void AcquirePlayer()
     {
         this.objectToFollow = FindObjectOfType<Player>().transform;
+        this.transform.position = objectToFollow.position + followBase;
         objectOffset = this.transform.position - objectToFollow.position;
     }
 

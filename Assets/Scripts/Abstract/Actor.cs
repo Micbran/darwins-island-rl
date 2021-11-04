@@ -25,7 +25,7 @@ public abstract class Actor : Entity
 
     protected int currentEnergy;
 
-    protected bool isMoving = false;
+    public bool isMoving = false;
 
     public int Energy
     {
@@ -56,7 +56,6 @@ public abstract class Actor : Entity
 
         if (hit.transform == null)
         {
-            this.isMoving = true;
             StartCoroutine(this.SmoothMovement(end));
             return true;
         }
@@ -66,17 +65,20 @@ public abstract class Actor : Entity
 
     protected IEnumerator SmoothMovement(Vector3 end)
     {
-        float sqrRemainingDistance = (this.transform.position - end).sqrMagnitude;
-
-        while (sqrRemainingDistance > 1e-13f)
-        {
-            Vector3 newPosition = Vector3.MoveTowards(this.rb.position, end, inverseMoveTime * Time.deltaTime);
-            rb.MovePosition(newPosition);
-            sqrRemainingDistance = (this.transform.position - end).sqrMagnitude;
-            yield return null;
-        }
+        this.isMoving = true;
         this.transform.position = end;
+        //float sqrRemainingDistance = (this.transform.position - end).sqrMagnitude;
+
+        //while (sqrRemainingDistance > 1e-13f)
+        //{
+        //    Vector3 newPosition = Vector3.MoveTowards(this.rb.position, end, inverseMoveTime * Time.deltaTime);
+        //    rb.MovePosition(newPosition);
+        //    sqrRemainingDistance = (this.transform.position - end).sqrMagnitude;
+        //    yield return null;
+        //}
+        //this.transform.position = end;
         this.isMoving = false;
+        yield return null;
     }
 
     public virtual bool AttemptMove(int xDir, int yDir)

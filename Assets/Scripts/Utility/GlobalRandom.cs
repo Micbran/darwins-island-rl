@@ -73,14 +73,38 @@ public static class GlobalRandom
 
     };
 
-    public static int RandomInt(int max)
+    public static int RandomInt(int max, int min = 1)
     {
-        return random.Next(1, max);
+        return random.Next(min, max + 1);
+    }
+
+    public static int RandomOddInt(int max)
+    {
+        int randOdd = random.Next(1, max + 1);
+        if (randOdd % 2 == 0)
+        {
+            randOdd -= 1;
+        }
+        return randOdd;
+    }
+
+    public static int RandomOddInt(int min, int max)
+    {
+        int randOdd = random.Next(min, max + 1);
+        if (randOdd % 2 == 0)
+        {
+            randOdd -= 1;
+        }
+        if (randOdd < min)
+        {
+            randOdd += 2;
+        }
+        return randOdd;
     }
 
     public static int AttackRoll()
     {
-        return random.Next(1, 20);
+        return random.Next(1, 21);
     }
 
     public static int SpeedRandomization(int speed)

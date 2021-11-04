@@ -17,6 +17,6 @@ public class UpgradeManager : MonoBehaviour
 
     public void Continue()
     {
-        SceneManager.LoadScene("Test Scene 3");
+        GameManager.Instance.TransitionLevel();
     }
 }

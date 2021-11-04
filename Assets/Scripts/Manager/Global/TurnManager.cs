@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TurnManager : Manager<TurnManager>
+public class TurnManager : LevelManager<TurnManager>
 {
     [SerializeField] private bool playersTurn = false;
     public bool IsPlayersTurn
@@ -14,21 +14,11 @@ public class TurnManager : Manager<TurnManager>
     }
     private List<Actor> actedEntities = new List<Actor>();
     private EnergyQueue actingEntities = new EnergyQueue();
-
-    private float moveTimerMax = 0.02f;
+    private Actor acting = null;
+    private float moveTimerMax = 0.00002f;
     private float moveTimer = 0;
 
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void OnGenerationComplete()
     {
         actedEntities.Clear();
         actingEntities.Clear();
@@ -42,10 +32,11 @@ public class TurnManager : Manager<TurnManager>
 
     private void Update()
     {
-        moveTimer -= Time.deltaTime;
-        if (moveTimer > 0) return;
+        if (acting != null && acting.isMoving) return;
+        // moveTimer -= Time.deltaTime;
+        // if (moveTimer > 0) return;
 
-        moveTimer = moveTimerMax;
+        // moveTimer = moveTimerMax;
         if (this.actingEntities.Count == 0 && !this.IsPlayersTurn)
         {
             this.StartNewGlobalTurn();
@@ -56,7 +47,7 @@ public class TurnManager : Manager<TurnManager>
             return;
         }
 
-        Actor acting = this.actingEntities.Dequeue();
+        acting = this.actingEntities.Dequeue();
         if (acting == null)
         {
             return;

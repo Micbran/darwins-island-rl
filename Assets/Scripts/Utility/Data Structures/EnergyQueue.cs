@@ -13,7 +13,7 @@ public class EnergyQueue
     public EnergyQueue()
     {
         this.actorQueue = new List<Actor>();
-        energyComparer = new EnergyComparer();
+        this.energyComparer = new EnergyComparer();
     }
 
     public void Enqueue(Actor newActor)

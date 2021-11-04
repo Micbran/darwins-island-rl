@@ -12,22 +12,15 @@ public class PlayerStatsDisplay : MonoBehaviour
 
     private Statistics stats;
 
-    private void Awake()
+    public void OnGenerationComplete()
     {
         this.stats = FindObjectOfType<Player>()?.GetComponent<Statistics>();
         if (this.stats == null)
         {
             Debug.LogError("Could not find player statistics.");
+            return;
         }
-    }
-
-    private void Start()
-    {
         this.UpdateUIValues();
-    }
-
-    private void OnEnable()
-    {
         this.stats.OnStatsChanged += UpdateStats;
     }
 

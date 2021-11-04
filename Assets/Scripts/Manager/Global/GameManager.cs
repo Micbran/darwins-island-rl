@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : Manager<GameManager>
 {
     private int currentFloor = 1;
+    private bool interimScene = false;
 
     public void GameOver()
     {
@@ -21,23 +22,13 @@ public class GameManager : Manager<GameManager>
 
     public void TransitionLevel()
     {
-        if (this.currentFloor == 1)
+        interimScene = !interimScene;
+        if (interimScene)
         {
             SceneManager.LoadScene("Between Level");
+            this.currentFloor++;
+            return;
         }
-        else if (this.currentFloor == 2)
-        {
-            SceneManager.LoadScene("Level1");
-        }
-        currentFloor++;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            Debug.Log("Set to player's turn.");
-            TurnManager.Instance.IsPlayersTurn = true;
-        }
+        SceneManager.LoadScene("Level2");
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LogManager : Manager<LogManager>
+public class LogManager : LevelManager<LogManager>
 {
     [SerializeField] private Text logText;
     [SerializeField] private ScrollRect logScrollRect;

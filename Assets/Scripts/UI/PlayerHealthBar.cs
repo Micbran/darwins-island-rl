@@ -12,22 +12,14 @@ public class PlayerHealthBar : MonoBehaviour
     [SerializeField] private Image healthBarMiddleground = null;
     [SerializeField] private float secondaryHealthBarDrainRate = 0.0002f;
 
-    private void Awake()
+    public void OnGenerationComplete()
     {
         this.stats = FindObjectOfType<Player>()?.GetComponent<Statistics>();
         if (this.stats == null)
         {
             Debug.LogError("Could not find player statistics.");
         }
-    }
-
-    private void Start()
-    {
         this.UpdateHealthBarValues(this.stats.MaxHealth);
-    }
-
-    private void OnEnable()
-    {
         stats.OnTakeDamage += UpdateHealthBar;
     }
 
@@ -38,7 +30,8 @@ public class PlayerHealthBar : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (healthBarMiddleground.fillAmount <= healthBarForeground.fillAmount)
+        if (this.healthBarMiddleground == null) return;
+        if (healthBarMiddleground?.fillAmount <= healthBarForeground.fillAmount)
             return;
         healthBarMiddleground.fillAmount -= secondaryHealthBarDrainRate;
 
