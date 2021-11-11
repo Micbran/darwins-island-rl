@@ -11,7 +11,7 @@ public abstract class Actor : Entity
     [SerializeField] private bool isPlayer = false;
     [SerializeField] public string actorName;
 
-    private readonly float floatConstant = 0.1f;
+    private readonly float floatConstant = 0.2f;
 
     public bool IsPlayer
     {

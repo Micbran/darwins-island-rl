@@ -10,6 +10,13 @@ public enum TileState
     Door = 5
 }
 
+public enum PickupState
+{
+    NotSet = 0,
+    HealthPickup = 1,
+    MutationPickup = 2
+}
+
 public class Tile
 {
     public int xLocation;
@@ -33,6 +40,7 @@ public class Tile
     public List<int> connectPathIds;
 
     public TileState state;
+    public PickupState pickupState;
 
     public Tile()
     {

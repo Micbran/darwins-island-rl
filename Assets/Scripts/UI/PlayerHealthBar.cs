@@ -19,7 +19,7 @@ public class PlayerHealthBar : MonoBehaviour
         {
             Debug.LogError("Could not find player statistics.");
         }
-        this.UpdateHealthBarValues(this.stats.MaxHealth);
+        this.UpdateHealthBarValues(this.stats.CurrentHealth);
         stats.OnTakeDamage += UpdateHealthBar;
     }
 

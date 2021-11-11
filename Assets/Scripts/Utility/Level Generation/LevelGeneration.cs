@@ -188,10 +188,19 @@ public static class LevelGeneration // a very epic, stateful class
                         validPosition = true;
                     }
                 }
-                if (GlobalRandom.RandomInt(100) <= parameters.PickupChance)
+                if (GlobalRandom.RandomInt(101) <= parameters.PickupChance)
                 {
                     currentTile.spawnPickup = true;
                     pickupsSpawned++;
+                    int pickupType = GlobalRandom.RandomInt(101);
+                    if (pickupType <= parameters.PickupHealthChance)
+                    {
+                        currentTile.pickupState = PickupState.HealthPickup;
+                    }
+                    else if (pickupType - parameters.PickupHealthChance <= parameters.PickupMutationChance)
+                    {
+                        currentTile.pickupState = PickupState.MutationPickup;
+                    }
                 }
             }
         }
@@ -428,7 +437,7 @@ public static class LevelGeneration // a very epic, stateful class
         }
 
         // Candidate Door Creation
-        for (int iterations = 0; iterations < 1000; iterations++)
+        for (int iterations = 0; iterations < 10000; iterations++)
         {
             int candidateCount = 0;
             for (int row = 0; row < parameters.GridSizeY; row++)

@@ -8,6 +8,7 @@ public class Statistics : MonoBehaviour
 {
     public event Action<int> OnTakeDamage = delegate { };
     public event Action OnStatsChanged = delegate { };
+    public event Action MutationLevelUp = delegate { };
 
 
     private int currentHealth;
@@ -49,26 +50,55 @@ public class Statistics : MonoBehaviour
         get { return this.speed; }
     }
 
+    private int mutationPoints;
+    public int MutationPoints
+    {
+        get { return this.mutationPoints; }
+    }
+
+    private int mutationLevels;
+    public int MutationLevels
+    {
+        get { return this.mutationLevels; }
+    }
+
     public bool IsFullHealth
     {
         get { return this.CurrentHealth == this.MaxHealth; }
     }
 
     private List<Attack> attacks = new List<Attack>();
+    public List<Attack> AttackList
+    {
+        get { return this.attacks.GetRange(0, this.attacks.Count); }
+    }
+    private List<Mutation> mutations = new List<Mutation>();
+    public List<Mutation> MutationList
+    {
+        get { return this.mutations.GetRange(0, this.mutations.Count); }
+    }
+
 
     [SerializeField] private CreatureStats starter;
     private Actor parent;
+    private bool isAlive;
 
     private void Awake()
     {
         this.parent = this.GetComponent<Actor>();
-        InitStats();
+        this.InitStats();
+
+    }
+
+    private void Start()
+    {
     }
 
     private void InitStats()
     {
-        this.currentHealth = starter.health;
-        this.maxHealth = this.currentHealth;
+        this.isAlive = true;
+        this.maxHealth = starter.health;
+        this.currentHealth = this.maxHealth;
 
         this.attack = starter.attack;
         this.defense = starter.defense;
@@ -76,6 +106,62 @@ public class Statistics : MonoBehaviour
         this.speed = starter.speed;
 
         this.attacks.AddRange(starter.attacks);
+        this.mutationPoints = 0;
+
+        if (starter is PlayerStats)
+        {
+            PlayerStats playerStarter = starter as PlayerStats;
+            this.currentHealth = playerStarter.currentHealth;
+            this.mutationPoints = playerStarter.mutationPoints;
+            this.mutationLevels = playerStarter.mutationLevels;
+            this.mutations.AddRange(playerStarter.mutations);
+        }
+        this.ApplyMutations();
+        this.OnStatsChanged?.Invoke();
+    }
+
+    private void ApplyMutations()
+    {
+        foreach (Mutation mutation in this.mutations)
+        {
+            this.ApplyMutationEffect(mutation);
+        }
+    }
+
+    private void ApplyMutationEffect(Mutation m)
+    {
+        this.maxHealth += m.healthChange;
+        this.currentHealth = Mathf.Clamp(this.currentHealth + m.healthChange, 1, this.maxHealth);
+        this.attack += m.attackChange;
+        this.damage += m.damageChange;
+        this.defense += m.defenseChange;
+        this.speed += m.speedChange;
+        if (m.bonusAttack)
+        {
+            this.attacks.Add(m.bonusAttack);
+        }
+    }
+
+    public void DeapplyMutations()
+    {
+        foreach (Mutation mutation in this.mutations)
+        {
+            this.DeapplyMutationEffect(mutation);
+        }
+    }
+
+    private void DeapplyMutationEffect(Mutation m)
+    {
+        this.maxHealth -= m.healthChange;
+        this.currentHealth = Mathf.Clamp(this.currentHealth - m.healthChange, -999, this.maxHealth);
+        this.attack -= m.attackChange;
+        this.damage -= m.damageChange;
+        this.defense -= m.defenseChange;
+        this.speed -= m.speedChange;
+        if (m.bonusAttack)
+        {
+            this.attacks.Remove(m.bonusAttack);
+        }
     }
 
     public void Heal(int amount, string source)
@@ -111,6 +197,7 @@ public class Statistics : MonoBehaviour
             return;
         }
 
+        List<(int, int)> attackDamageList = new List<(int, int)>();
         foreach (Attack attack in attacks)
         {
             int attackResult = GlobalRandom.AttackRoll();
@@ -125,16 +212,40 @@ public class Statistics : MonoBehaviour
                 resultSource = this.parent.actorName,
                 resultTarget = targetActor.actorName
             };
+            attackDamageList.Add((attackResult, damageResult));
             LogManager.Instance.AddNewResult(result);
-            targetStats.TakeAttack(attackResult + this.attack, damageResult + this.damage);
         }
-        
+
+        foreach ((int, int) attackDamagePair in attackDamageList)
+        {
+            targetStats.TakeAttack(attackDamagePair.Item1 + this.attack, attackDamagePair.Item2 + this.damage);
+        }
+
+    }
+
+    public void IncreaseMutationPoints(int value)
+    {
+        this.mutationPoints += value;
+        this.CheckForMutationLevelUp();
+        LogManager.Instance.AddNewResult(new BasicResult() { message = $"You gained {value} mutation points!" });
+        this.OnStatsChanged?.Invoke();
+    }
+
+    private void CheckForMutationLevelUp()
+    {
+        if (this.mutationPoints >= 50)
+        {
+            this.mutationLevels++;
+            this.mutationPoints -= 50;
+            this.MutationLevelUp?.Invoke();
+        }
     }
 
     private void CheckIfAlive()
     {
-        if (this.currentHealth <= 0)
+        if (this.currentHealth <= 0 && this.isAlive)
         {
+            this.isAlive = false;
             this.parent.KillActor();
         }
     }

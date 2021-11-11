@@ -18,6 +18,8 @@ public class LevelGenerationParameters
     public int MaximumPickupsPerRoom = 2;
     public int MinimumPickupsPerRoom = 0;
     public int PickupChance = 40;
+    public int PickupHealthChance = 60;
+    public int PickupMutationChance = 40;
 
     public LevelGenerationParameters(int gsx = 81, int gsy = 81, int rmins = 3, int rmaxs = 10, int rpi = 80, int ppi = 10000, int tc = 25)
     {

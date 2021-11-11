@@ -5,6 +5,7 @@ public class LevelVisualizer : MonoBehaviour
 {
     public UnityEvent LevelGenerationFinished = new UnityEvent();
     private Tile[,] Level;
+    private bool levelGenComplete = false;
 
     [SerializeField] private GameObject Block;
     [SerializeField] private GameObject Room;
@@ -16,13 +17,14 @@ public class LevelVisualizer : MonoBehaviour
     [SerializeField] private GameObject Stairs;
     [SerializeField] private GameObject Enemy;
     [SerializeField] private GameObject Health;
+    [SerializeField] private GameObject Mutation;
 
     [SerializeField] private float xOffset = 0.5f;
     [SerializeField] private float zOffset = 0.5f;
 
     private void Awake()
     {
-        this.Level = LevelGeneration.CreateLevel(new LevelGenerationParameters(gsx: 15, gsy: 15, rmins: 3, rmaxs: 10, rpi: 1000, ppi: 10000, tc: 100));
+        this.Level = LevelGeneration.CreateLevel(new LevelGenerationParameters(gsx: 21, gsy: 21, rmins: 3, rmaxs: 10, rpi: 100, ppi: 1000, tc: 100));
         for (int row = 0; row < Level.GetLength(0); row++)
         {
             for (int column = 0; column < Level.GetLength(1); column++)
@@ -62,17 +64,26 @@ public class LevelVisualizer : MonoBehaviour
                 }
                 if (currentTile.spawnPickup)
                 {
-                    Instantiate(this.Health, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                    switch (currentTile.pickupState)
+                    {
+                        case PickupState.HealthPickup:
+                            Instantiate(this.Health, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                            break;
+
+                        case PickupState.MutationPickup:
+                            Instantiate(this.Mutation, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                            break;
+                    }
 
                 }
             }
         }
-        this.LevelGenerationFinished?.Invoke();
+        this.levelGenComplete = true;
         Debug.Log("Instantiation complete.");
     }
 
     private void Start()
     {
-
+        this.LevelGenerationFinished?.Invoke();
     }
 }

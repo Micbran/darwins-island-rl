@@ -3,6 +3,7 @@ using UnityEngine;
 public abstract class Manager<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T instance;
+    protected static bool resetRun = false;
 
     public static T Instance
     {
