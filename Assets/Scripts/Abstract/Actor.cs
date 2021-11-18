@@ -47,6 +47,7 @@ public abstract class Actor : Entity
         Vector3 end = start + direction;
         this.mainCollider.enabled = false;
         Physics.Raycast(start, direction, out hit, direction.magnitude + this.floatConstant, this.collisionLayer | this.actorLayer);
+        // hits = Physics.OverlapSphere(end, 0.4f, this.collisionLayer | this.actorLayer);
         this.mainCollider.enabled = true;
 
         if (this.isMoving)

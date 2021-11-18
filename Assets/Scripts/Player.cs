@@ -8,8 +8,8 @@ public class Player : Actor
     [SerializeField] private float inputDelay = 0.2f;
     private float inputDelayTimer = 0f;
 
-    [SerializeField] private List<MeshRenderer> artMeshes;
-    [SerializeField] private Material swapMaterial;
+    [SerializeField] private SpriteRenderer sRenderer;
+    [SerializeField] private Color swapColor;
 
     private bool delaying = false;
 
@@ -28,12 +28,7 @@ public class Player : Actor
         {
             if (delaying)
             {
-                foreach (MeshRenderer mesh in this.artMeshes)
-                {
-                    Material tempMaterial = mesh.material;
-                    mesh.material = this.swapMaterial;
-                    this.swapMaterial = tempMaterial;
-                }
+                this.sRenderer.color = Color.white;
                 delaying = false;
             }
             if (!TurnManager.Instance.IsPlayersTurn || this.isMoving)
@@ -94,12 +89,7 @@ public class Player : Actor
         base.EndTurn();
         TurnManager.Instance.EndPlayerTurn();
         inputDelayTimer = this.inputDelay;
-        foreach (MeshRenderer mesh in this.artMeshes)
-        {
-            Material tempMaterial = mesh.material;
-            mesh.material = this.swapMaterial;
-            this.swapMaterial = tempMaterial;
-        }
+        sRenderer.color = this.swapColor;
         delaying = true;
     }
 

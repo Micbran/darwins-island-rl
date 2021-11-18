@@ -7,7 +7,7 @@ public class LevelVisualizer : MonoBehaviour
     private Tile[,] Level;
     private bool levelGenComplete = false;
 
-    [SerializeField] private GameObject Block;
+    [SerializeField] private LevelBlock Block;
     [SerializeField] private GameObject Room;
     [SerializeField] private GameObject Path;
     [SerializeField] private GameObject NotSet;
@@ -22,6 +22,9 @@ public class LevelVisualizer : MonoBehaviour
     [SerializeField] private float xOffset = 0.5f;
     [SerializeField] private float zOffset = 0.5f;
 
+    [Space(10)]
+    [SerializeField] private TileMap defaultTileMap;
+
     private void Awake()
     {
         this.Level = LevelGeneration.CreateLevel(new LevelGenerationParameters(gsx: 21, gsy: 21, rmins: 3, rmaxs: 10, rpi: 100, ppi: 1000, tc: 100));
@@ -33,7 +36,8 @@ public class LevelVisualizer : MonoBehaviour
                 switch (currentTile.state)
                 {
                     case TileState.Block:
-                        Instantiate(this.Block, new Vector3(currentTile.xLocation + this.xOffset, 2.5f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                        LevelBlock block = Instantiate(this.Block, new Vector3(currentTile.xLocation + this.xOffset, 2.5f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                        block.DetermineTexture(this.defaultTileMap, currentTile);
                         break;
                     case TileState.NotSet:
                         Instantiate(this.NotSet, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);

@@ -36,6 +36,7 @@ public static class LevelGeneration // a very epic, stateful class
                 Tile currentTile = new Tile();
                 currentTile.xLocation = column;
                 currentTile.yLocation = row;
+                currentTile.torchChance = 8;
                 if (column == 0 || column == sizeX - 1 || row == 0 || row == sizeY - 1)
                 {
                     currentTile.state = TileState.Block;
