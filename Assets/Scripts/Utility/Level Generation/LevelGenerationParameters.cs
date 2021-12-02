@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class LevelGenerationParameters
 {
     public int GridSizeX;
@@ -20,27 +22,62 @@ public class LevelGenerationParameters
     public int PickupChance = 40;
     public int PickupHealthChance = 60;
     public int PickupMutationChance = 40;
+    public int LizardChance = 50;
+    public int BeeChance = 50;
+    public int SpiderChance = 0;
+    public int AcidSpitterChance = 0;
 
-    public LevelGenerationParameters(int gsx = 81, int gsy = 81, int rmins = 3, int rmaxs = 10, int rpi = 80, int ppi = 10000, int tc = 25)
+    public LevelGenerationParameters(int gridXMax = 81, int gridYMax = 81, int roomMinSize = 3, int roomMaxSize = 10, int roomPlacementIterations = 80, int pathPlacementIterations = 10000, int trimCount = 25)
     {
-        if (gsx % 2 is 0)
+        if (gridXMax % 2 is 0)
         {
-            gsx++;
+            gridXMax++;
         }
-        if (gsy % 2 is 0)
+        if (gridYMax % 2 is 0)
         {
-            gsy++;
+            gridYMax++;
         }
-        this.GridSizeX = gsx;
-        this.GridSizeY = gsy;
+        this.GridSizeX = Mathf.Max(gridXMax, gridYMax);
+        this.GridSizeY = Mathf.Max(gridYMax, gridXMax);
 
-        this.RoomMinSize = rmins;
-        this.RoomMaxSize = rmaxs;
+        this.RoomMinSize = roomMinSize;
+        this.RoomMaxSize = roomMaxSize;
 
-        this.RoomPlacementIterations = rpi;
-        this.PathPlacementIterations = ppi;
+        this.RoomPlacementIterations = roomPlacementIterations;
+        this.PathPlacementIterations = pathPlacementIterations;
 
-        this.TrimCount = tc;
+        this.TrimCount = trimCount;
     }
-    
+
+    public static LevelGenerationParameters Builder(int currentFloor)
+    {
+        LevelGenerationParameters levelParams = new LevelGenerationParameters(
+            gridXMax: 20 + GlobalRandom.RandomInt(currentFloor + 1, 2),
+            gridYMax: 20 + GlobalRandom.RandomInt(currentFloor + 1, 2),
+            roomMinSize: 3,
+            roomMaxSize: 10,
+            roomPlacementIterations: 200,
+            pathPlacementIterations: 2000,
+            trimCount: 100
+            );
+
+        levelParams.MinimumStairsDistance = (levelParams.GridSizeX + levelParams.GridSizeY) / 2 / 2;
+        levelParams.MaximumEnemiesPerRoom = 3 + currentFloor / 3;
+        levelParams.MinimumEnemiesPerRoom = 0 + currentFloor / 3;
+        levelParams.EnemyChance = 50 + currentFloor;
+        levelParams.PickupChance = 40 + currentFloor;
+        levelParams.PickupHealthChance = GlobalRandom.RandomInt(70, 40);
+        levelParams.PickupMutationChance = 100 - levelParams.PickupHealthChance;
+        levelParams.ResolveEnemySpawnChances(currentFloor);
+        return levelParams;
+    }
+
+    private void ResolveEnemySpawnChances(int currentFloor)
+    {
+        EnemyChances chances = new EnemyChances(currentFloor);
+        this.LizardChance = chances.Lizard;
+        this.BeeChance = chances.Bee;
+        this.SpiderChance = chances.Spider;
+        this.AcidSpitterChance = chances.AcidSpitter;
+    }
 }

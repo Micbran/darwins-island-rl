@@ -171,6 +171,7 @@ public static class LevelGeneration // a very epic, stateful class
                 {
                     currentTile.spawnEnemy = true;
                     enemiesSpawned++;
+                    currentTile = DetermineEnemySpawnType(parameters, currentTile);
                 }
             }
             // minimum catching
@@ -189,11 +190,11 @@ public static class LevelGeneration // a very epic, stateful class
                         validPosition = true;
                     }
                 }
-                if (GlobalRandom.RandomInt(101) <= parameters.PickupChance)
+                if (GlobalRandom.RandomInt(100) <= parameters.PickupChance)
                 {
                     currentTile.spawnPickup = true;
                     pickupsSpawned++;
-                    int pickupType = GlobalRandom.RandomInt(101);
+                    int pickupType = GlobalRandom.RandomInt(100);
                     if (pickupType <= parameters.PickupHealthChance)
                     {
                         currentTile.pickupState = PickupState.HealthPickup;
@@ -206,6 +207,29 @@ public static class LevelGeneration // a very epic, stateful class
             }
         }
         return grid;
+    }
+
+    private static Tile DetermineEnemySpawnType(LevelGenerationParameters parameters, Tile currentTile)
+    {
+        int result = GlobalRandom.RandomInt(100);
+        if (result <= parameters.LizardChance)
+        {
+            currentTile.enemySpawnType = EnemySpawnType.Lizard;
+        }
+        else if (result - parameters.LizardChance <= parameters.BeeChance)
+        {
+            currentTile.enemySpawnType = EnemySpawnType.Bee;
+        }
+        else if (result - parameters.LizardChance - parameters.BeeChance <= parameters.SpiderChance)
+        {
+            currentTile.enemySpawnType = EnemySpawnType.Spider;
+        }
+        else if (result - parameters.LizardChance - parameters.BeeChance - parameters.SpiderChance <= parameters.AcidSpitterChance)
+        {
+            currentTile.enemySpawnType = EnemySpawnType.AcidSpitter;
+        }
+
+        return currentTile;
     }
 
     private static Tile[,] PreparePaths(Tile[,] grid, LevelGenerationParameters parameters)
@@ -432,7 +456,7 @@ public static class LevelGeneration // a very epic, stateful class
         {
             roomIDs.Add(i);
         }
-        for (int i = 0; i < currentPath; i++)
+        for (int i = 1; i < currentPath; i++)
         {
             pathIDs.Add(i);
         }
@@ -490,20 +514,42 @@ public static class LevelGeneration // a very epic, stateful class
             }
 
             // Random Room ID
-            int pickedRoomId = roomIDs[GlobalRandom.RandomInt(roomIDs.Count - 1, 0)];
+            int pickedRoomId = -1;
+            int pickedPathId = -1;
 
-            // PickedTiles Update
-            for (int row = 0; row < parameters.GridSizeY; row++)
+            if (roomIDs.Count == 0)
             {
-                for (int column = 0; column < parameters.GridSizeX; column++)
+                pickedPathId = pathIDs[GlobalRandom.RandomInt(roomIDs.Count - 1, 0)];
+                for (int row = 0; row < parameters.GridSizeY; row++)
                 {
-                    Tile currentTile = grid[row, column];
-                    if (currentTile.connectCandidate && currentTile.connectRoomIds.Contains(pickedRoomId))
+                    for (int column = 0; column < parameters.GridSizeX; column++)
                     {
-                        pickedTiles.Add(currentTile);
+                        Tile currentTile = grid[row, column];
+                        if (currentTile.connectCandidate && currentTile.connectPathIds.Contains(pickedPathId))
+                        {
+                            pickedTiles.Add(currentTile);
+                        }
                     }
                 }
             }
+            else
+            {
+                pickedRoomId = roomIDs[GlobalRandom.RandomInt(roomIDs.Count - 1, 0)];
+                for (int row = 0; row < parameters.GridSizeY; row++)
+                {
+                    for (int column = 0; column < parameters.GridSizeX; column++)
+                    {
+                        Tile currentTile = grid[row, column];
+                        if (currentTile.connectCandidate && currentTile.connectRoomIds.Contains(pickedRoomId))
+                        {
+                            pickedTiles.Add(currentTile);
+                        }
+                    }
+                }
+            }
+            // PickedTiles Update
+
+
 
             // Pick Connector
             Tile pickedTile = null;
@@ -532,12 +578,12 @@ public static class LevelGeneration // a very epic, stateful class
                     bool isRoom = currentTile.state == TileState.Room;
                     bool isPath = currentTile.state == TileState.Path;
                     bool isDoor = currentTile.state == TileState.Door;
-                    // if (!(isRoom || isPath || isDoor)) continue;
+                    if (!(isRoom || isPath || isDoor)) continue;
                     if (isPath)
                     {
-                        foreach (int pickedPathId in pickedPaths)
+                        foreach (int ppi in pickedPaths)
                         {
-                            if (currentTile.PathID == pickedPathId)
+                            if (currentTile.PathID == ppi)
                             {
                                 currentTile.state = TileState.Room;
                                 currentTile.PathID = -1;
@@ -570,13 +616,13 @@ public static class LevelGeneration // a very epic, stateful class
             {
                 if (pId != pickedRoomId)
                 {
-                    roomIDs.Remove(pId);
+                    // roomIDs.Remove(pId);
                 }
             }
 
             foreach (int pId in pickedPaths)
             {
-                pathIDs.Remove(pId);
+                // pathIDs.Remove(pId);
             }
             pickedRooms.Clear();
             pickedPaths.Clear();
@@ -628,17 +674,17 @@ public static class LevelGeneration // a very epic, stateful class
             }
         }
 
-        //for (int row = 0; row < parameters.GridSizeY; row++)
-        //{
-        //    for (int column = 0; column < parameters.GridSizeX; column++)
-        //    {
-        //        Tile currentTile = grid[row, column];
-        //        if (currentTile.state == TileState.Path)
-        //        {
-        //            currentTile.state = TileState.Block;
-        //        }
-        //    }
-        //}
+        for (int row = 0; row < parameters.GridSizeY; row++)
+        {
+            for (int column = 0; column < parameters.GridSizeX; column++)
+            {
+                Tile currentTile = grid[row, column];
+                if (currentTile.state == TileState.Path)
+                {
+                    currentTile.state = TileState.Block;
+                }
+            }
+        }
 
         return grid;
     }

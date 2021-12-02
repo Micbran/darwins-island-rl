@@ -73,7 +73,7 @@ public class LevelBlock : MonoBehaviour
                 break;
             case Direction.AboveBelowLeftRight:
                 renderer.materials[2].SetTexture("_MainTex", map.All);
-                if (DetermineNumberOfTripletNeighbors(info) <= 2)
+                if (DetermineNumberOfTripletNeighbors(info) <= 3)
                 {
                     this.transform.localScale = this.transform.localScale + new Vector3(0.3f, 0.01f, 0.3f);
                 }
@@ -111,7 +111,7 @@ public class LevelBlock : MonoBehaviour
                     break;
                 case Direction.Left:
                     rightTorch.SetActive(true);
-                    belowTorch.SetActive(true);
+                    aboveTorch.SetActive(true);
                     leftTorch.SetActive(true);
                     break;
                 case Direction.Right:
@@ -134,16 +134,16 @@ public class LevelBlock : MonoBehaviour
                     rightTorch.SetActive(true);
                     break;
                 case Direction.BelowRight:
-                    aboveTorch.SetActive(true);
-                    leftTorch.SetActive(true);
+                    belowTorch.SetActive(true);
+                    rightTorch.SetActive(true);
                     break;
                 case Direction.AboveRight:
                     belowTorch.SetActive(true);
                     leftTorch.SetActive(true);
                     break;
                 case Direction.AboveLeft:
-                    rightTorch.SetActive(true);
-                    belowTorch.SetActive(true);
+                    leftTorch.SetActive(true);
+                    aboveTorch.SetActive(true);
                     break;
                 case Direction.LeftRight:
                     leftTorch.SetActive(true);

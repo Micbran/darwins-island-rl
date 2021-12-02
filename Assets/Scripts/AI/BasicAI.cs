@@ -53,7 +53,7 @@ public class BasicAI : MonoBehaviour, IArtificialIntelligence
             foreach (Collider collider in collisionInfo)
             {
                 Player playerCheck = collider.GetComponent<Player>();
-                if (playerCheck)
+                if (playerCheck != null)
                 {
                     // Attack player
                     this.parentEnemy.OnCantMove(playerCheck);
@@ -66,6 +66,7 @@ public class BasicAI : MonoBehaviour, IArtificialIntelligence
         directions.Sort(
             (dir1, dir2) => Vector3.Distance(this.PlayerLocation, dir1.Center).CompareTo(Vector3.Distance(this.PlayerLocation, dir2.Center))
             );
+
         foreach (CollisionInformation collisionInfo in directions)
         {
             bool skipToNext = false;

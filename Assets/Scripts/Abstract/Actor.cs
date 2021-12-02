@@ -11,7 +11,7 @@ public abstract class Actor : Entity
     [SerializeField] private bool isPlayer = false;
     [SerializeField] public string actorName;
 
-    private readonly float floatConstant = 0.2f;
+    // private readonly float floatConstant = 0.2f;
 
     public bool IsPlayer
     {
@@ -40,14 +40,14 @@ public abstract class Actor : Entity
         this.inverseMoveTime = 1f / moveTime;
     }
 
-    protected bool Move(int xDir, int yDir, out RaycastHit hit)
+    protected bool Move(int xDir, int yDir, out Collider[] hits)
     {
         Vector3 start = this.transform.position;
         Vector3 direction = new Vector3(xDir, 0, yDir);
         Vector3 end = start + direction;
         this.mainCollider.enabled = false;
-        Physics.Raycast(start, direction, out hit, direction.magnitude + this.floatConstant, this.collisionLayer | this.actorLayer);
-        // hits = Physics.OverlapSphere(end, 0.4f, this.collisionLayer | this.actorLayer);
+        // Physics.Raycast(start, direction, out hits, direction.magnitude + this.floatConstant, this.collisionLayer | this.actorLayer);
+        hits = Physics.OverlapSphere(end, 0.4f, this.collisionLayer | this.actorLayer);
         this.mainCollider.enabled = true;
 
         if (this.isMoving)
@@ -55,7 +55,7 @@ public abstract class Actor : Entity
             return false;
         }
 
-        if (hit.transform == null)
+        if (hits.Length == 0)
         {
             StartCoroutine(this.SmoothMovement(end));
             return true;
@@ -84,17 +84,25 @@ public abstract class Actor : Entity
 
     public virtual bool AttemptMove(int xDir, int yDir)
     {
-        RaycastHit hit;
-        bool canMove = Move(xDir, yDir, out hit);
+        Collider[] hits;
+        bool canMove = Move(xDir, yDir, out hits);
 
         // empty space
-        if (hit.transform == null)
+        if (hits.Length == 0)
         {
             return true;
         }
 
-        Actor hitComponent = hit.transform.GetComponent<Actor>();
-
+        Actor hitComponent = null;
+        foreach (Collider c in hits)
+        {
+            Actor actorComponent = c.gameObject.GetComponent<Actor>();
+            if (actorComponent != null)
+            {
+                hitComponent = actorComponent;
+            }
+        }
+        
         // Actor in the way
         if (!canMove && hitComponent != null)
         {

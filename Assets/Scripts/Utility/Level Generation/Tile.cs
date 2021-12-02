@@ -37,6 +37,15 @@ public enum PickupState
     MutationPickup = 2
 }
 
+public enum EnemySpawnType
+{
+    NotSet = 0,
+    Lizard,
+    Bee,
+    Spider,
+    AcidSpitter
+}
+
 public class Tile
 {
     public int xLocation;
@@ -49,6 +58,8 @@ public class Tile
 
     public bool spawnPickup;
     public bool spawnEnemy;
+
+    public EnemySpawnType enemySpawnType;
 
     public bool playerSpawn;
     public bool stairsSpawn;
@@ -76,6 +87,8 @@ public class Tile
 
         this.spawnEnemy = false;
         this.spawnPickup = false;
+
+        this.enemySpawnType = EnemySpawnType.NotSet;
 
         this.playerSpawn = false;
         this.stairsSpawn = false;

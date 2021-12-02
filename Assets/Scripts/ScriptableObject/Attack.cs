@@ -2,11 +2,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public enum AttackType
+{
+    Single = 0,
+    PBAoeRange1 = 1
+}
+
 [CreateAssetMenu(fileName = "Attack.asset", menuName = "Attack")]
 public class Attack : ScriptableObject
 {
     [SerializeField] private List<Dice> diceExpression;
     [SerializeField] private string diceExpressionString;
+    [SerializeField] private bool benefitsFromDamage = true;
+    [SerializeField] private AttackType type = AttackType.Single;
+
+    public bool BenefitsFromDamage => this.benefitsFromDamage;
+    public AttackType AttackType => this.type;
 
     private void Awake()
     {

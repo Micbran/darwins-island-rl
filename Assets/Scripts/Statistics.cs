@@ -9,6 +9,7 @@ public class Statistics : MonoBehaviour
     public event Action<int> OnTakeDamage = delegate { };
     public event Action OnStatsChanged = delegate { };
     public event Action MutationLevelUp = delegate { };
+    public event Action<Vector3> OnDeath = delegate { };
 
 
     private int currentHealth;
@@ -178,7 +179,15 @@ public class Statistics : MonoBehaviour
     {
         this.currentHealth -= damageTaken;
         this.OnTakeDamage?.Invoke(this.currentHealth);
-        CheckIfAlive();
+        bool isAlive = CheckIfAlive();
+        if (isAlive && this.starter.HitSound != null)
+        {
+            AudioHelper.PlayClip2D(this.starter.HitSound, 1.0f);
+        }
+        if (this.starter.HitParticles != null)
+        {
+            Instantiate(this.starter.HitParticles, this.transform.position, Quaternion.identity);
+        }
     }
 
     public void TakeAttack(int attackRoll, int damageRoll)
@@ -186,6 +195,11 @@ public class Statistics : MonoBehaviour
         if (attackRoll >= this.defense)
         {
             this.TakeDamage(damageRoll);
+            return;
+        }
+        if (this.starter.MissSound != null)
+        {
+            AudioHelper.PlayClip2D(this.starter.MissSound, 1.5f);
         }
     }
 
@@ -198,29 +212,84 @@ public class Statistics : MonoBehaviour
         }
 
         List<(int, int)> attackDamageList = new List<(int, int)>();
+        List<Attack> specialAttacks = new List<Attack>();
         foreach (Attack attack in attacks)
         {
             int attackResult = GlobalRandom.AttackRoll();
             int damageResult = attack.RollAttack();
-            AttackResult result = new AttackResult()
+            if (attack.AttackType == AttackType.Single)
             {
-                resultAttack = attack,
-                attackRollTotal = attackResult + this.attack,
-                defense = targetStats.Defense,
-                damageRoll = damageResult,
-                damageBonus = this.damage,
-                resultSource = this.parent.actorName,
-                resultTarget = targetActor.actorName
-            };
-            attackDamageList.Add((attackResult, damageResult));
-            LogManager.Instance.AddNewResult(result);
+                AttackResult result = new AttackResult()
+                {
+                    resultAttack = attack,
+                    attackRollTotal = attackResult + this.attack,
+                    defense = targetStats.Defense,
+                    damageRoll = damageResult,
+                    damageBonus = this.damage,
+                    resultSource = this.parent.actorName,
+                    resultTarget = targetActor.actorName
+                };
+                attackDamageList.Add((attackResult, damageResult));
+                LogManager.Instance.AddNewResult(result);
+            }
+            else if (attack.AttackType == AttackType.PBAoeRange1)
+            {
+                specialAttacks.Add(attack);
+            }
         }
+
+        this.ResolveAoEAttacks(specialAttacks);
 
         foreach ((int, int) attackDamagePair in attackDamageList)
         {
             targetStats.TakeAttack(attackDamagePair.Item1 + this.attack, attackDamagePair.Item2 + this.damage);
         }
 
+        if(this.starter.AttackSound != null)
+        {
+            AudioHelper.PlayClip2D(this.starter.AttackSound, 1.0f);
+        }
+
+    }
+
+    private void ResolveAoEAttacks(List<Attack> specialAttacks)
+    {
+        foreach (Attack sa in specialAttacks)
+        {
+            List<CollisionInformation> directions = new List<CollisionInformation>();
+            Vector3 currentPosition = this.transform.position;
+            directions.Add(new CollisionInformation(Physics.OverlapSphere(currentPosition + Vector3.left, 0.4f), currentPosition, Vector3.left));
+            directions.Add(new CollisionInformation(Physics.OverlapSphere(currentPosition + Vector3.right, 0.4f), currentPosition, Vector3.right));
+            directions.Add(new CollisionInformation(Physics.OverlapSphere(currentPosition + Vector3.forward, 0.4f), currentPosition, Vector3.forward));
+            directions.Add(new CollisionInformation(Physics.OverlapSphere(currentPosition + Vector3.back, 0.4f), currentPosition, Vector3.back));
+
+            foreach (CollisionInformation ci in directions)
+            {
+                List<(int, int)> attackDamageList = new List<(int, int)>();
+                foreach (Collider collide in ci)
+                {
+                    Statistics statsCheck = collide.GetComponent<Statistics>();
+                    if (statsCheck != null)
+                    {
+                        int attackResult = GlobalRandom.AttackRoll();
+                        int damageResult = sa.RollAttack();
+
+                        AttackResult result = new AttackResult()
+                        {
+                            resultAttack = sa,
+                            attackRollTotal = attackResult + this.attack,
+                            defense = statsCheck.Defense,
+                            damageRoll = damageResult,
+                            damageBonus = 0,
+                            resultSource = this.parent.actorName,
+                            resultTarget = statsCheck.parent.actorName
+                        };
+                        LogManager.Instance.AddNewResult(result);
+                        statsCheck.TakeAttack(attackResult + this.Attack, damageResult);
+                    }
+                }
+            }
+        }
     }
 
     public void IncreaseMutationPoints(int value)
@@ -241,13 +310,20 @@ public class Statistics : MonoBehaviour
         }
     }
 
-    private void CheckIfAlive()
+    private bool CheckIfAlive()
     {
         if (this.currentHealth <= 0 && this.isAlive)
         {
             this.isAlive = false;
+            this.OnDeath?.Invoke(this.transform.position);
             this.parent.KillActor();
+            if (this.starter.DeathSound != null)
+            {
+                AudioHelper.PlayClip2D(this.starter.DeathSound, 1.0f);
+            }
+            return false;
         }
+        return true;
     }
 
 

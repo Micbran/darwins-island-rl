@@ -15,19 +15,43 @@ public class LevelVisualizer : MonoBehaviour
 
     [SerializeField] private GameObject Player;
     [SerializeField] private GameObject Stairs;
-    [SerializeField] private GameObject Enemy;
+
+    [Space(10)]
     [SerializeField] private GameObject Health;
     [SerializeField] private GameObject Mutation;
 
+    [Space(10)]
+    [SerializeField] private GameObject Lizard;
+    [SerializeField] private GameObject Bee;
+    [SerializeField] private GameObject Spider;
+    [SerializeField] private GameObject AcidSpitter;
+
+    [Space(10)]
     [SerializeField] private float xOffset = 0.5f;
     [SerializeField] private float zOffset = 0.5f;
 
     [Space(10)]
     [SerializeField] private TileMap defaultTileMap;
 
+    [Space(10)]
+    [SerializeField] private Transform playerSpawnPoint;
+
     private void Awake()
     {
-        this.Level = LevelGeneration.CreateLevel(new LevelGenerationParameters(gsx: 21, gsy: 21, rmins: 3, rmaxs: 10, rpi: 100, ppi: 1000, tc: 100));
+        
+    }
+
+    private void Start()
+    {
+        if (GameManager.Instance.IsStaticLevel)
+        {
+            Instantiate(this.Player, new Vector3(playerSpawnPoint.position.x, 0f, playerSpawnPoint.position.z), Quaternion.identity);
+            this.levelGenComplete = true;
+            this.LevelGenerationFinished?.Invoke();
+            return;
+        }
+        LevelGenerationParameters levelParams = LevelGenerationParameters.Builder(GameManager.Instance.Floor);
+        this.Level = LevelGeneration.CreateLevel(levelParams);
         for (int row = 0; row < Level.GetLength(0); row++)
         {
             for (int column = 0; column < Level.GetLength(1); column++)
@@ -63,8 +87,7 @@ public class LevelVisualizer : MonoBehaviour
                 }
                 if (currentTile.spawnEnemy)
                 {
-                    Instantiate(this.Enemy, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
-
+                    this.DetermineEnemySpawnType(currentTile);
                 }
                 if (currentTile.spawnPickup)
                 {
@@ -84,10 +107,28 @@ public class LevelVisualizer : MonoBehaviour
         }
         this.levelGenComplete = true;
         Debug.Log("Instantiation complete.");
+        this.LevelGenerationFinished?.Invoke();
     }
 
-    private void Start()
+    private void DetermineEnemySpawnType(Tile currentTile)
     {
-        this.LevelGenerationFinished?.Invoke();
+        switch (currentTile.enemySpawnType)
+        {
+            case EnemySpawnType.NotSet:
+                Instantiate(this.Lizard, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                break;
+            case EnemySpawnType.Lizard:
+                Instantiate(this.Lizard, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                break;
+            case EnemySpawnType.Bee:
+                Instantiate(this.Bee, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                break;
+            case EnemySpawnType.Spider:
+                Instantiate(this.Spider, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                break;
+            case EnemySpawnType.AcidSpitter:
+                Instantiate(this.AcidSpitter, new Vector3(currentTile.xLocation + this.xOffset, 0f, currentTile.yLocation + this.zOffset), Quaternion.identity);
+                break;
+        }
     }
 }

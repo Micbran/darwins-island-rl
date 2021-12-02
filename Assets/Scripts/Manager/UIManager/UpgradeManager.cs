@@ -69,7 +69,7 @@ public class UpgradeManager : MonoBehaviour
             this.chosenMutations.Add(chosenMutation);
         }
 
-        foreach (Mutation m in mutationMasterListCopy)
+        foreach (Mutation m in this.chosenMutations)
         {
             MutationButton reference = Instantiate(this.MutationButton, this.ButtonContainer.transform);
             reference.representedMutation = m;
@@ -99,6 +99,8 @@ public class UpgradeManager : MonoBehaviour
             {
                 Destroy(button.gameObject);
             }
+            this.mutationButtons.Clear();
+            this.chosenMutations.Clear();
             this.ChooseMutations();
         }
     }

@@ -9,6 +9,9 @@ public class GameManager : Manager<GameManager>
     [SerializeField] public PlayerStats statsSave;
     [SerializeField] private PlayerStats debugReset;
     private int currentFloor = 1;
+    public int Floor => this.currentFloor;
+    private bool isStaticLevel = false;
+    public bool IsStaticLevel => this.isStaticLevel;    
     private bool interimScene = false;
 
     public override void Awake()
@@ -38,11 +41,18 @@ public class GameManager : Manager<GameManager>
     public void NewGame()
     {
         enabled = true;
+        resetRun = false;
+        this.isStaticLevel = false;
+        this.interimScene = false;
         this.currentFloor = 1;
     }
 
     public void TransitionLevel()
     {
+        if (SceneManager.GetActiveScene().name.Equals("BossArena"))
+        {
+            SceneManager.LoadScene("Win Screen");
+        }
         this.UpdatePlayerStats();
         interimScene = !interimScene;
         if (interimScene)
@@ -51,7 +61,16 @@ public class GameManager : Manager<GameManager>
             this.currentFloor++;
             return;
         }
-        SceneManager.LoadScene("Level2");
+        if (currentFloor <= 6)
+        {
+            SceneManager.LoadScene("Level2");
+        }
+        else
+        {
+            this.isStaticLevel = true;
+            SceneManager.LoadScene("BossArena");
+        }
+
     }
 
     private void UpdatePlayerStats()

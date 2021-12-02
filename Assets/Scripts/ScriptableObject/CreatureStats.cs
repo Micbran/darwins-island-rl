@@ -12,4 +12,10 @@ public class CreatureStats : ScriptableObject
     public int speed;
 
     public List<Attack> attacks;
+
+    public AudioClip AttackSound;
+    public AudioClip MissSound;
+    public AudioClip HitSound;
+    public AudioClip DeathSound;
+    public ParticleSystem HitParticles;
 }

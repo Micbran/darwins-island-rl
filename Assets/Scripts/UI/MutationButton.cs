@@ -11,11 +11,13 @@ public class MutationButton : MonoBehaviour
     [SerializeField] private Text popoverFieldText;
     [SerializeField] private Button button;
     [SerializeField] private Text buttonText;
+    [SerializeField] private Text buttonDescriptionText;
     private bool isHovered = false;
 
     public void RefreshUI ()
-    {
+    {   
         this.buttonText.text = this.representedMutation.mutationName;
+        this.buttonDescriptionText.text = this.representedMutation.shortDescription;
         this.popoverFieldText.text = this.representedMutation.description;
         if (this.button.interactable)
         {
