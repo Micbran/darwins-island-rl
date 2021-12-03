@@ -49,7 +49,7 @@ public class GameManager : Manager<GameManager>
 
     public void TransitionLevel()
     {
-        if (SceneManager.GetActiveScene().name.Equals("BossArena"))
+        if (this.IsStaticLevel)
         {
             SceneManager.LoadScene("Win Screen");
         }
@@ -101,6 +101,6 @@ public class GameManager : Manager<GameManager>
         this.statsSave.mutationPoints = playerStats.MutationPoints;
         this.statsSave.mutations = playerStats.MutationList.GetRange(0, playerStats.MutationList.Count);
 
-        EditorUtility.SetDirty(this.statsSave);
+        // EditorUtility.SetDirty(this.statsSave);
     }
 }
