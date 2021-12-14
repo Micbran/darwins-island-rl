@@ -5,10 +5,13 @@ public class InputManager : LevelManager<InputManager>
 {
     public event Action MutationDisplayPressed = delegate { };
     public event Action MutationDisplayReleased = delegate { };
+    public event Action CharacterDisplayPressed = delegate { };
+    public event Action CharacterDisplayReleased = delegate { };
 
     private void Update()
     {
-        CheckMutationDisplay();
+        this.CheckMutationDisplay();
+        this.CheckCharacterSheetDisplay();
     }
 
     private void CheckMutationDisplay()
@@ -20,6 +23,18 @@ public class InputManager : LevelManager<InputManager>
         else if (Input.GetKeyUp(KeyCode.M))
         {
             this.MutationDisplayReleased?.Invoke();
+        }
+    }
+
+    private void CheckCharacterSheetDisplay()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            this.CharacterDisplayPressed?.Invoke();
+        }
+        else if (Input.GetKeyUp(KeyCode.C))
+        {
+            this.CharacterDisplayReleased?.Invoke();
         }
     }
 }

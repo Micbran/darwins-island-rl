@@ -11,6 +11,7 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private List<Mutation> mutationMasterList = new List<Mutation>();
     [SerializeField] private Button continueButton;
     [SerializeField] private Text titleText;
+    [SerializeField] private Text floorText;
 
     private List<Mutation> chosenMutations = new List<Mutation>();
     private List<MutationButton> mutationButtons = new List<MutationButton>();
@@ -23,6 +24,7 @@ public class UpgradeManager : MonoBehaviour
         this.playerStats = GameManager.Instance.statsSave;
         this.upgradeChosen = !this.PlayerHasMutationsPending();
         this.RefreshUI();
+        this.SetFloorIndicator();
         if (!upgradeChosen)
         {
             this.ChooseMutations();
@@ -30,6 +32,19 @@ public class UpgradeManager : MonoBehaviour
         else
         {
             this.UpgradeChosen();
+        }
+    }
+
+    private void SetFloorIndicator()
+    {
+        int currentFloor = GameManager.Instance.Floor;
+        if (currentFloor > 6)
+        {
+            this.floorText.text = "Boss floor next!";
+        }
+        else
+        {
+            this.floorText.text = this.floorText.text.Replace("{X}", currentFloor.ToString());
         }
     }
 

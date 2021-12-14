@@ -49,10 +49,6 @@ public class GameManager : Manager<GameManager>
 
     public void TransitionLevel()
     {
-        if (this.IsStaticLevel)
-        {
-            SceneManager.LoadScene("Win Screen");
-        }
         this.UpdatePlayerStats();
         interimScene = !interimScene;
         if (interimScene)
@@ -71,6 +67,11 @@ public class GameManager : Manager<GameManager>
             SceneManager.LoadScene("BossArena");
         }
 
+    }
+
+    public void EndGame()
+    {
+        SceneManager.LoadScene("Win Screen");
     }
 
     private void UpdatePlayerStats()
@@ -100,7 +101,24 @@ public class GameManager : Manager<GameManager>
         this.statsSave.mutationLevels = playerStats.MutationLevels;
         this.statsSave.mutationPoints = playerStats.MutationPoints;
         this.statsSave.mutations = playerStats.MutationList.GetRange(0, playerStats.MutationList.Count);
+    }
 
-        // EditorUtility.SetDirty(this.statsSave);
+    // Check for debug input
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftBracket))
+        {
+            // Heal player to full
+            FindObjectOfType<Player>()?.DebugHealFull();
+        }
+        else if (Input.GetKeyDown(KeyCode.RightBracket))
+        {
+            // Give player full mutation point
+            FindObjectOfType<Player>()?.DebugGiveMutationPoint();
+        }
+        else if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            this.TransitionLevel();
+        }
     }
 }

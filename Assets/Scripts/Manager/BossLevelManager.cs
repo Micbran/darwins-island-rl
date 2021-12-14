@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class BossLevelManager : MonoBehaviour
 {
+    [SerializeField] private TurnManager turnManager;
+    [Space(10)]
     [SerializeField] private List<Transform> spawnTransforms = new List<Transform>();
     [SerializeField] private Statistics bossStats;
     [SerializeField] private LevelChange stairsPrefab;
     [Space(10)]
-    [SerializeField] private GameObject Bee;
-    [SerializeField] private GameObject AcidSpitter;
-    [SerializeField] private GameObject Spider;
+    [SerializeField] private Actor Bee;
+    [SerializeField] private Actor AcidSpitter;
+    [SerializeField] private Actor Spider;
 
     private int bossMaxHP;
     private int bossCurrHP;
@@ -68,7 +70,8 @@ public class BossLevelManager : MonoBehaviour
         List<Vector3> spawnPositions = this.GetSpawnPositions();
         foreach (Vector3 position in spawnPositions)
         {
-            Instantiate(this.Bee, position, Quaternion.identity);
+            Actor reference = Instantiate(this.Bee, position, Quaternion.identity);
+            this.turnManager.AddActorToTurnOrder(reference);
         }
     }
 
@@ -77,7 +80,8 @@ public class BossLevelManager : MonoBehaviour
         List<Vector3> spawnPositions = this.GetSpawnPositions();
         foreach (Vector3 position in spawnPositions)
         {
-            Instantiate(this.Spider, position, Quaternion.identity);
+            Actor reference = Instantiate(this.Spider, position, Quaternion.identity);
+            this.turnManager.AddActorToTurnOrder(reference);
         }
     }
 
@@ -86,7 +90,8 @@ public class BossLevelManager : MonoBehaviour
         List<Vector3> spawnPositions = this.GetSpawnPositions();
         foreach (Vector3 position in spawnPositions)
         {
-            Instantiate(this.AcidSpitter, position, Quaternion.identity);
+            Actor reference = Instantiate(this.AcidSpitter, position, Quaternion.identity);
+            this.turnManager.AddActorToTurnOrder(reference);
         }
     }
 

@@ -113,4 +113,9 @@ public class TurnManager : LevelManager<TurnManager>
             this.actingEntities.Enqueue(playerRef);
         }
     }
+
+    public void AddActorToTurnOrder(Actor newActor)
+    {
+        this.actingEntities.Enqueue(newActor);
+    }
 }

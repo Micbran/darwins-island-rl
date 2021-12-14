@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerMutationDisplay : MonoBehaviour
@@ -32,11 +33,14 @@ public class PlayerMutationDisplay : MonoBehaviour
     private void BuildMutationDisplay()
     {
         this.gridObject.SetActive(true);
-        foreach (Mutation m in this.player.MutationList)
+        List<Mutation> copyList = this.player.MutationList;
+        IEnumerable<IGrouping<Mutation, Mutation>> groupList = copyList.GroupBy(m => m);
+        foreach (IGrouping<Mutation, Mutation> group in groupList)
         {
             MutationDescriptionEntry entry = Instantiate(this.UIElement, this.gridObject.transform);
-            entry.mutationName = m.mutationName;
-            entry.mutationDescription = m.description;
+            entry.mutationName = group.Key.mutationName;
+            entry.mutationDescription = group.Key.description;
+            entry.mutationNumber = group.Count().ToString();
 
             entry.RefreshUI();
 

@@ -22,7 +22,14 @@ public class WorldInteraction : MonoBehaviour
                 LevelChange levelChange = hit.GetComponent<LevelChange>();
                 if (levelChange)
                 {
-                    GameManager.Instance.TransitionLevel();
+                    if (GameManager.Instance.Floor > 6)
+                    {
+                        GameManager.Instance.EndGame();
+                    }
+                    else
+                    {
+                        GameManager.Instance.TransitionLevel();
+                    }
                 }
             }
         }

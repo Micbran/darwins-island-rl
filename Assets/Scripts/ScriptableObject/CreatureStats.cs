@@ -18,4 +18,5 @@ public class CreatureStats : ScriptableObject
     public AudioClip HitSound;
     public AudioClip DeathSound;
     public ParticleSystem HitParticles;
+    public ParticleSystem LightHitParticles;
 }

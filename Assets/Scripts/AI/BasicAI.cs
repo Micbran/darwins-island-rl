@@ -30,6 +30,10 @@ public class BasicAI : MonoBehaviour, IArtificialIntelligence
 
     public void Act()
     {
+        if (this.playerReference == null)
+        {
+            this.playerReference = FindObjectOfType<Player>();
+        }
         Vector3 currentPosition = this.transform.position;
         // currentPosition.y = this.PlayerLocation.y;
 

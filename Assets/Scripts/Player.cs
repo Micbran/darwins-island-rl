@@ -103,4 +103,14 @@ public class Player : Actor
         GameManager.Instance.GameOver();
         this.gameObject.SetActive(false);
     }
+
+    public void DebugHealFull()
+    {
+        this.stats.DebugHealFull();
+    }
+
+    public void DebugGiveMutationPoint()
+    {
+        this.stats.DebugGiveMutationPoint();
+    }
 }

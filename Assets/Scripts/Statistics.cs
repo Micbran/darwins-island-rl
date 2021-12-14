@@ -82,6 +82,7 @@ public class Statistics : MonoBehaviour
 
     [SerializeField] private CreatureStats starter;
     private Actor parent;
+    public string ActorName => this.parent.actorName;
     private bool isAlive;
 
     private void Awake()
@@ -190,6 +191,14 @@ public class Statistics : MonoBehaviour
         }
     }
 
+    public void TakeMultipleAttacks(List<(int, int)> attackDamagePairList, int actorAttack, int actorDamage)
+    {
+        foreach ((int, int) attackDamagePair in attackDamagePairList)
+        {
+            this.TakeAttack(attackDamagePair.Item1 + actorAttack, attackDamagePair.Item2 + actorDamage);
+        }
+    }
+
     public void TakeAttack(int attackRoll, int damageRoll)
     {
         if (attackRoll >= this.defense)
@@ -240,10 +249,7 @@ public class Statistics : MonoBehaviour
 
         this.ResolveAoEAttacks(specialAttacks);
 
-        foreach ((int, int) attackDamagePair in attackDamageList)
-        {
-            targetStats.TakeAttack(attackDamagePair.Item1 + this.attack, attackDamagePair.Item2 + this.damage);
-        }
+        targetStats.TakeMultipleAttacks(attackDamageList, this.attack, this.damage);
 
         if(this.starter.AttackSound != null)
         {
@@ -266,9 +272,14 @@ public class Statistics : MonoBehaviour
             foreach (CollisionInformation ci in directions)
             {
                 List<(int, int)> attackDamageList = new List<(int, int)>();
+                if (this.starter.LightHitParticles != null)
+                {
+                    Instantiate(this.starter.LightHitParticles, ci.Center, Quaternion.identity);
+                }
                 foreach (Collider collide in ci)
                 {
                     Statistics statsCheck = collide.GetComponent<Statistics>();
+                    
                     if (statsCheck != null)
                     {
                         int attackResult = GlobalRandom.AttackRoll();
@@ -326,5 +337,19 @@ public class Statistics : MonoBehaviour
         return true;
     }
 
+    public void DebugHealFull()
+    {
+        this.currentHealth = this.MaxHealth;
+        this.OnTakeDamage?.Invoke(this.CurrentHealth);
+        LogManager.Instance.AddNewResult(new BasicResult { message = "DEBUG: You are healed to full!" });
+    }
+
+    public void DebugGiveMutationPoint()
+    {
+        this.mutationPoints = 0;
+        this.mutationLevels++;
+        this.MutationLevelUp?.Invoke();
+        LogManager.Instance.AddNewResult(new BasicResult { message = "DEBUG: You gained a mutation level!" });
+    }
 
 }

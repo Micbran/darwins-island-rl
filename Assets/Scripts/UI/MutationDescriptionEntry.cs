@@ -5,6 +5,7 @@ public class MutationDescriptionEntry : MonoBehaviour
 {
     public string mutationName;
     public string mutationDescription;
+    public string mutationNumber;
     [SerializeField] private Text mutationLabel;
     [SerializeField] private Text mutationText;
 
@@ -15,7 +16,7 @@ public class MutationDescriptionEntry : MonoBehaviour
 
     public void RefreshUI()
     {
-        this.mutationLabel.text = this.mutationName;
+        this.mutationLabel.text = this.mutationName + $" (x{this.mutationNumber})";
         this.mutationText.text = this.mutationDescription;
     }
 }
