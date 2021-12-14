@@ -31,8 +31,11 @@ public class PlayerHealthBar : MonoBehaviour
     private void FixedUpdate()
     {
         if (this.healthBarMiddleground == null) return;
-        if (healthBarMiddleground?.fillAmount <= healthBarForeground.fillAmount)
+        if (healthBarMiddleground.fillAmount <= healthBarForeground.fillAmount)
+        {
+            healthBarMiddleground.fillAmount = healthBarForeground.fillAmount;
             return;
+        }
         healthBarMiddleground.fillAmount -= secondaryHealthBarDrainRate;
 
     }

@@ -104,7 +104,7 @@ public class BossLevelManager : MonoBehaviour
         {
             if (iterations >= 100) break;
             iterations++;
-            Transform spawnRef = spawnTransformsCopy[GlobalRandom.RandomInt(this.spawnTransforms.Count - 1, 0)];
+            Transform spawnRef = spawnTransformsCopy[GlobalRandom.RandomInt(this.spawnTransforms.Count - 2, 0)];
             Collider[] collisions = Physics.OverlapSphere(spawnRef.position, 0.4f);
             bool isOccupied = false;
             foreach (Collider collider in collisions)
@@ -127,5 +127,6 @@ public class BossLevelManager : MonoBehaviour
     private void OnBossDeath(Vector3 lastPosition)
     {
         Instantiate(this.stairsPrefab, lastPosition, Quaternion.identity);
+        MusicManager.Instance.CurrentAudioSource.Stop();
     }
 }

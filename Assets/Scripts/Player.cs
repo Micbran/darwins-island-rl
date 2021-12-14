@@ -5,13 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(Statistics))]
 public class Player : Actor
 {
-    [SerializeField] private float inputDelay = 0.2f;
+    [SerializeField] private float inputDelay = 0.1f;
     private float inputDelayTimer = 0f;
 
     [SerializeField] private SpriteRenderer sRenderer;
     [SerializeField] private Color swapColor;
-
-    private bool delaying = false;
 
     private Statistics stats;
 
@@ -23,33 +21,34 @@ public class Player : Actor
 
     private void Update ()
     {
-        inputDelayTimer -= Time.deltaTime;
-        if (inputDelayTimer <= 0)
+        this.inputDelayTimer -= Time.deltaTime; // there's like, theoretically an underflow bug with this
+        if (this.inputDelayTimer > 0) return;
+        if (!TurnManager.Instance.IsPlayersTurn || this.isMoving)
         {
-            if (delaying)
-            {
-                this.sRenderer.color = Color.white;
-                delaying = false;
-            }
-            if (!TurnManager.Instance.IsPlayersTurn || this.isMoving)
-            {
-                return;
-            }
+            return;
+        }
 
-            int horizontal = 0;
-            int vertical = 0;
+        this.sRenderer.color = Color.white;
 
-            horizontal = (int)Input.GetAxisRaw("Horizontal");
-            vertical = (int)Input.GetAxisRaw("Vertical");
+        int horizontal = 0;
+        int vertical = 0;
 
-            if (horizontal != 0 || vertical != 0)
+        horizontal = (int)Input.GetAxisRaw("Horizontal");
+        vertical = (int)Input.GetAxisRaw("Vertical");
+
+        if (horizontal != 0 || vertical != 0)
+        {
+            if (Mathf.Abs(horizontal) == 1 && Mathf.Abs(vertical) == 1)
             {
-                if (Mathf.Abs(horizontal) == 1 && Mathf.Abs(vertical) == 1)
-                {
-                    horizontal = 0;
-                }
-                AttemptMove(horizontal, vertical);
+                horizontal = 0;
             }
+            AttemptMove(horizontal, vertical);
+        }
+
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            LogManager.Instance.AddNewResult(new BasicResult() { message = $"{this.actorName} waits." });
+            this.EndTurn();
         }
     }
 
@@ -64,7 +63,7 @@ public class Player : Actor
 
         if (validMove)
         {
-            EndTurn();
+            this.EndTurn();
         }
 
         return validMove;
@@ -88,9 +87,8 @@ public class Player : Actor
     {
         base.EndTurn();
         TurnManager.Instance.EndPlayerTurn();
-        inputDelayTimer = this.inputDelay;
+        this.inputDelayTimer = this.inputDelay;
         sRenderer.color = this.swapColor;
-        delaying = true;
     }
 
     protected override void AddEnergy()
