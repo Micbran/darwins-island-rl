@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class PlayerMutationDisplay : MonoBehaviour
@@ -41,11 +42,27 @@ public class PlayerMutationDisplay : MonoBehaviour
             entry.mutationName = group.Key.mutationName;
             entry.mutationDescription = group.Key.description;
             entry.mutationNumber = group.Count().ToString();
+            entry.mutationStackText = this.DetermineMutationStackText(group.Key, group.Count());
 
             entry.RefreshUI();
 
             this.mutationFields.Add(entry);
         }
+    }
+
+    private string DetermineMutationStackText(Mutation mutation, int stacks)
+    {
+        string finalString = mutation.stackDescription;
+        MatchCollection matches = Regex.Matches(finalString, @"{([0-9])+}");
+        foreach (Match m in matches)
+        {
+            int stackValue = int.Parse(m.Groups[1].Captures[0].ToString());
+            int totalValue = stackValue * stacks;
+            Regex reg = new Regex(@"{[0-9]+}");
+            finalString = reg.Replace(finalString, totalValue.ToString(), 1);
+        }
+
+        return finalString;
     }
 
     private void TearDownMutationDisplay()

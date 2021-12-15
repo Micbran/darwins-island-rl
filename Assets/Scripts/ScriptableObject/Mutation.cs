@@ -16,6 +16,7 @@ public class Mutation : ScriptableObject
     public Attack bonusAttack;
 
     public string shortDescription;
+    public string stackDescription;
     [TextArea(15, 20)]
     public string description;
 

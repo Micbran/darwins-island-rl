@@ -15,7 +15,7 @@ public class HealOnCollide : MonoBehaviour
             Statistics checkStats = checkPlayer.GetComponent<Statistics>();
             if (!checkStats.IsFullHealth)
             {
-                checkPlayer.GetComponent<Statistics>().Heal(healAmount, "a berry");
+                checkPlayer.GetComponent<Statistics>().Heal(healAmount + checkStats.MaxHealth / 5, "a berry");
                 if (this.PickupSound != null)
                 {
                     AudioHelper.PlayClip2D(this.PickupSound, 1.0f);
